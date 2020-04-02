@@ -1,0 +1,54 @@
+############################PRE-MAINTENANCE-PLAYBOOK#############################################
+--- 
+- hosts: all
+  name: "Ansible Pre Maintenance Automation"
+  vars:
+   - date: "{{ lookup('pipe', 'date +%d-%m-%y') }}-pre"
+
+  tasks: 
+  - name: Ansible create pre maitenanc file.
+    file:
+      path: "/tmp/{{ date }}"
+      state: touch
+
+  - name: Run a pre maintenance script
+    script: /home/pbagga/pre.sh > "/tmp/{{ date }}"
+
+
+#  - name: Compare Route Table count
+#    shell: grep -A1 -R 'ROUTE TABLE COUNT' /tmp/24-03-20/{{ date }}/tmp/{{ date }} | tail -1 != route -n | wc -l
+#    register: result
+#    changed_when: true
+
+  - name: Store file into /tmp/date-pre
+    fetch: 
+     dest:  "/tmp/{{ date }}"
+     src:  "/tmp/{{ date }}" 
+  tags:
+   - pre
+############################POST-MAINTENANCE-PLAYBOOK#############################################
+- hosts: all
+  name: "Ansible Post Maintenance Automation"
+  vars:
+   - dates: "{{ lookup('pipe', 'date +%d-%m-%y') }}-post"
+  tasks:
+  - name: Ansible create post maintenance
+    file:
+      path: "/tmp/{{ dates }}"
+      state: touch
+  - name: Run a post maintenancescript only
+    script: /home/pbagga/pre.sh > "/tmp/{{ dates }}"
+
+  - name: Comparioson
+    script: /home/pbagga/test1.sh
+    register: shell_result
+  - name: Store file into /tmp/date-post
+    fetch:
+     dest:  "/tmp/{{ dates }}"
+     src:  "/tmp/{{ dates }}"
+  - debug:
+      var: shell_result.stdout_lines
+  tags:
+   - post
+
+

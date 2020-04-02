@@ -1,0 +1,15 @@
+- name: test play
+  hosts: app-server
+
+  tasks:
+
+      - shell: netstat -tunlp
+        register: motd_contents
+      - shell: grep -A1 -r 'ROUTE TABLE COUNT' /tmp/24-03-20-pre/client1/tmp/24-03-20-pre | tail -1
+        register: old_rout
+      - shell: echo "motd contains the word hi"
+        when: motd_contents.stdout == old_rout
+        register: status
+      - debug:
+          var: status.stdout_lines
+

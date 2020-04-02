@@ -1,0 +1,28 @@
+- hosts: app-server
+  name: "Ansible Post Maintenance Automation"
+  vars:
+    dates: "{{ lookup('pipe', 'date +%d-%m-%y') }}-post"
+
+  tasks:
+  - name: Ansible create file if it doesn't exist example
+    file:
+      path: "/tmp/{{ dates }}"
+      state: touch
+  - name: Run a script only if file.txt exists on the remote node
+    script: /home/pbagga/pre.sh > "/tmp/{{ dates }}"
+
+  - name: Store file into /tmp/fetched/host.example.com/tmp/somefile
+    fetch:
+     dest:  "/tmp/{{ dates }}"
+     src:  "/tmp/{{ dates }}"
+  - name: The difference of Pre and Post File
+    command: diff {{ date }} {{ dates }}
+    args:
+     chdir: "/tmp/"
+    failed_when: "diff.rc > 1"
+    register: diff
+  - name: debug Output
+    debug: msg= "{{ diff.stdout }}"
+  tags:
+   - post
+
