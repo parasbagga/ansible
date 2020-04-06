@@ -1,0 +1,11 @@
+---
+- hosts: all
+  tasks:
+  - name: add the user 'johnd'
+    user:
+     name: test1
+     comment: added with Ansible
+     create_home: yes
+     state: absent
+     remove: yes
+
