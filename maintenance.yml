@@ -14,16 +14,27 @@
   - name: Run a pre maintenance script
     script: /home/pbagga/pre.sh > "/tmp/{{ date }}"
 
+  - name: Ansible copy passwd remote to remote
+    copy:
+      src: /etc/passwd
+      dest: "/tmp/passwd-{{ date }}"
+      remote_src: yes
 
 #  - name: Compare Route Table count
 #    shell: grep -A1 -R 'ROUTE TABLE COUNT' /tmp/24-03-20/{{ date }}/tmp/{{ date }} | tail -1 != route -n | wc -l
 #    register: result
 #    changed_when: true
 
+#  - name: Store file into /tmp/date-pre
+#    fetch: 
+#     dest:  "/tmp/{{ date }}"
+#     src:  "/tmp/{{ date }}" 
+
   - name: Store file into /tmp/date-pre
-    fetch: 
-     dest:  "/tmp/{{ date }}"
-     src:  "/tmp/{{ date }}" 
+    fetch: src=/tmp/{{ item }} dest=/tmp/{{ date }}
+    with_items:
+    - "{{ date }}"
+    - "passwd-{{ date }}"
   tags:
    - pre
 ############################POST-MAINTENANCE-PLAYBOOK#############################################
