@@ -6,7 +6,7 @@
    - date: "{{ lookup('pipe', 'date +%d-%m-%y') }}-pre"
 
   tasks: 
-  - name: Ansible create pre maitenanc file.
+  - name: Ansible create pre maitenance file.
     file:
       path: "/tmp/{{ date }}"
       state: touch
@@ -19,6 +19,13 @@
       src: /etc/passwd
       dest: "/tmp/passwd-{{ date }}"
       remote_src: yes
+  
+  - name: Ansible copy sudoers remote to remote
+    copy:
+      src: /etc/sudoers
+      dest: "/tmp/sudoers-{{ date }}"
+      remote_src: yes
+
 
 #  - name: Compare Route Table count
 #    shell: grep -A1 -R 'ROUTE TABLE COUNT' /tmp/24-03-20/{{ date }}/tmp/{{ date }} | tail -1 != route -n | wc -l
@@ -35,6 +42,7 @@
     with_items:
     - "{{ date }}"
     - "passwd-{{ date }}"
+    - "sudoers-{{ date }}"
   tags:
    - pre
 ############################POST-MAINTENANCE-PLAYBOOK#############################################
@@ -47,10 +55,10 @@
     file:
       path: "/tmp/{{ dates }}"
       state: touch
-  - name: Run a post maintenancescript only
+  - name: Run a post maintenance script only
     script: /home/pbagga/pre.sh > "/tmp/{{ dates }}"
 
-  - name: Comparioson
+  - name: Comparision
     script: /home/pbagga/test1.sh
     register: shell_result
   - name: Store file into /tmp/date-post
