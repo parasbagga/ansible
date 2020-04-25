@@ -12,7 +12,7 @@
       state: touch
 
   - name: Run a pre maintenance script
-     script: /root/awx/awx/extra/pre.sh > "/tmp/{{ date }}"
+    script: /home/extra/pre.sh > "/tmp/{{ date }}"
 
   - name: Ansible copy passwd remote to remote
     copy:
